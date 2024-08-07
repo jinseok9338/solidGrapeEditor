@@ -1,0 +1,39 @@
+{
+  "name": "vite-template-solid",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "docs": "vuepress dev docs",
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@solidjs/testing-library": "^0.8.9",
+    "@testing-library/jest-dom": "^6.4.8",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/lodash": "^4.17.7",
+    "@types/node": "^22.0.2",
+    "jsdom": "^24.1.1",
+    "solid-devtools": "^0.30.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vite-plugin-solid": "^2.8.2",
+    "vitest": "^2.0.5",
+    "vuepress": "^1.8.2",
+    "whatwg-fetch": "^3.6.2"
+  },
+  "dependencies": {
+    "codemirror": "^6.0.1",
+    "codemirror-formatting": "^1.0.0",
+    "dayjs": "^1.11.12",
+    "effect": "^3.6.1",
+    "grapesjs": "^0.21.12",
+    "lodash": "^4.17.21",
+    "promise-polyfill": "^8.1.3",
+    "solid-js": "^1.8.11"
+  }
+}
