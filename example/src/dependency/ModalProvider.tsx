@@ -48,7 +48,7 @@ export interface ModalEventProps {
   close: () => void;
 }
 
-const ModalProvider = ({ children }: ModalProviderProps) => {
+const ModalProvider = (props: ModalProviderProps) => {
   const { editor } = useEditorInstance();
   const options = useEditorOptions();
   const [isOpen, setOpen] = createSignal(false);
@@ -92,8 +92,8 @@ const ModalProvider = ({ children }: ModalProviderProps) => {
   onMount(() => options.setCustomModal(true));
 
   return editor()
-    ? typeof children === "function"
-      ? children({ open: isOpen(), ...modalState })
+    ? typeof props.children === "function"
+      ? props.children({ open: isOpen(), ...modalState })
       : null
     : null;
 };

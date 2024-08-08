@@ -26,7 +26,7 @@ export interface StylesProviderProps {
   children: (props: StylesResultProps) => JSX.Element;
 }
 
-const StylesProvider = ({ children }: StylesProviderProps) => {
+const StylesProvider = (props: StylesProviderProps) => {
   const { editor } = useEditorInstance();
   const options = useEditorOptions();
   const [propState, setPropState] = createStore<StylesState>({
@@ -59,7 +59,11 @@ const StylesProvider = ({ children }: StylesProviderProps) => {
 
   onMount(() => options.setCustomStyles(true));
 
-  return editor() ? (isFunction(children) ? children(propState) : null) : null;
+  return editor()
+    ? isFunction(props.children)
+      ? props.children(propState)
+      : null
+    : null;
 };
 
 export default StylesProvider;

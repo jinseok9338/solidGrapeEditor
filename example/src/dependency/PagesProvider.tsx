@@ -39,7 +39,7 @@ export interface PagesProviderProps {
   children: (props: PagesResultProps) => JSX.Element;
 }
 
-const PagesProvider = ({ children }: PagesProviderProps) => {
+const PagesProvider = (props: PagesProviderProps) => {
   const { editor } = useEditorInstance();
   const [propState, setPropState] = createStore<PagesState>({
     pages: [],
@@ -77,7 +77,11 @@ const PagesProvider = ({ children }: PagesProviderProps) => {
     });
   });
 
-  return editor() ? (isFunction(children) ? children(propState) : null) : null;
+  return editor()
+    ? isFunction(props.children)
+      ? props.children(propState)
+      : null
+    : null;
 };
 
 export default PagesProvider;

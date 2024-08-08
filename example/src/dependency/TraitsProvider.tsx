@@ -26,7 +26,7 @@ export interface TraitsProviderProps {
   children: (props: TraitsResultProps) => JSX.Element;
 }
 
-const TraitsProvider = ({ children }: TraitsProviderProps) => {
+const TraitsProvider = (props: TraitsProviderProps) => {
   const { editor } = useEditorInstance();
   const options = useEditorOptions();
   const [propState, setPropState] = createStore<TraitsState>({
@@ -60,7 +60,11 @@ const TraitsProvider = ({ children }: TraitsProviderProps) => {
 
   onMount(() => options.setCustomTraits(true));
 
-  return editor() ? (isFunction(children) ? children(propState) : null) : null;
+  return editor()
+    ? isFunction(props.children)
+      ? props.children(propState)
+      : null
+    : null;
 };
 
 export default TraitsProvider;

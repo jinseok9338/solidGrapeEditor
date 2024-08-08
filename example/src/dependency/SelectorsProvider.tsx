@@ -59,7 +59,7 @@ export interface SelectorsProviderProps {
   children: (props: SelectorsResultProps) => JSX.Element;
 }
 
-const SelectorsProvider = ({ children }: SelectorsProviderProps) => {
+const SelectorsProvider = (props: SelectorsProviderProps) => {
   const { editor } = useEditorInstance();
   const options = useEditorOptions();
   const [propState, setPropState] = createStore<SelectorsState>({
@@ -105,7 +105,11 @@ const SelectorsProvider = ({ children }: SelectorsProviderProps) => {
   });
 
   onMount(() => options.setCustomSelectors(true));
-  return editor() ? (isFunction(children) ? children(propState) : null) : null;
+  return editor()
+    ? isFunction(props.children)
+      ? props.children(propState)
+      : null
+    : null;
 };
 
 export default SelectorsProvider;

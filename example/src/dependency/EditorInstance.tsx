@@ -12,8 +12,7 @@ import {
   initPlugins,
 } from "./utils/plugins";
 import { JSX } from "solid-js/jsx-runtime";
-import { createEffect, createSignal, onCleanup } from "solid-js";
-import { create } from "domain";
+import { createEffect, createSignal, onCleanup, splitProps } from "solid-js";
 
 export interface EditorProps extends JSX.HTMLAttributes<HTMLDivElement> {
   grapesjs: string | typeof gjs;
@@ -70,21 +69,21 @@ export interface EditorProps extends JSX.HTMLAttributes<HTMLDivElement> {
   waitReady?: boolean | JSX.Element;
 }
 
-const EditorInstance = ({
-  children,
-  style,
-  options = {},
-  plugins = [],
-  grapesjs,
-  grapesjsCss,
-  onEditor = noop,
-  onReady,
-  onUpdate,
-  waitReady,
-  class: className,
-  ...rest
-}: EditorProps) => {
-  const { setEditor } = useEditorInstance();
+const EditorInstance = (props: EditorProps) => {
+  const [local, rest] = splitProps(props, [
+    "children",
+    "style",
+    "options",
+    "plugins",
+    "grapesjs",
+    "grapesjsCss",
+    "onEditor",
+    "onReady",
+    "onUpdate",
+    "waitReady",
+    "class",
+  ]);
+  const { setEditor, editor } = useEditorInstance();
   const editorOptions = useEditorOptions();
 
   const [isEditorReady, setEditorReady] = createSignal(false);
@@ -92,57 +91,58 @@ const EditorInstance = ({
 
   createEffect(() => {
     // Wait until all refs are loaded
-    if (!editorOptions.ready || !editorRef) {
+    if (!editorOptions.state.ready || !editorRef) {
       return;
     }
 
     const defaultContainer = editorRef;
-    const canvasContainer = editorOptions.refCanvas;
+    const canvasContainer = editorOptions.state.refCanvas;
 
-    let editor: Editor | undefined;
-    let pluginOptions: PluginToLoad["options"] = {};
-    let loadedPlugins: GrapesPlugins[] = [];
+    const [pluginOptions, setPluginOptions] = createSignal<
+      PluginToLoad["options"]
+    >({});
+    const [loadedPlugins, setLoadedPlugins] = createSignal<GrapesPlugins[]>([]);
 
     const loadEditor = (grapes: typeof gjs) => {
       const config: EditorConfig = {
-        height: "100%",
-        ...options,
-        plugins: [...loadedPlugins, ...(options.plugins || [])],
+        height: "100vh",
+        ...local.options,
+        plugins: [...loadedPlugins(), ...(local.options?.plugins || [])],
         pluginsOpts: {
-          ...options.pluginsOpts,
-          ...pluginOptions,
+          ...local.options?.pluginsOpts,
+          ...pluginOptions(),
         },
         modal: {
-          ...options.modal,
-          custom: !!editorOptions.customModal,
+          ...local.options?.modal,
+          custom: !!editorOptions.state.customModal,
         },
         assetManager: {
-          ...options.assetManager,
-          custom: !!editorOptions.customAssets,
+          ...local.options?.assetManager,
+          custom: !!editorOptions.state.customAssets,
         },
         styleManager: {
-          ...options.styleManager,
-          custom: !!editorOptions.customStyles,
+          ...local.options?.styleManager,
+          custom: !!editorOptions.state.customStyles,
         },
         blockManager: {
-          ...options.blockManager,
-          custom: !!editorOptions.customBlocks,
+          ...local.options?.blockManager,
+          custom: !!editorOptions.state.customBlocks,
         },
         richTextEditor: {
-          ...options.richTextEditor,
-          custom: !!editorOptions.customRte,
+          ...local.options?.richTextEditor,
+          custom: !!editorOptions.state.customRte,
         },
         layerManager: {
-          ...options.layerManager,
-          custom: !!editorOptions.customLayers,
+          ...local.options?.layerManager,
+          custom: !!editorOptions.state.customLayers,
         },
         traitManager: {
-          ...options.traitManager,
-          custom: !!editorOptions.customTraits,
+          ...local.options?.traitManager,
+          custom: !!editorOptions.state.customTraits,
         },
         selectorManager: {
-          ...options.selectorManager,
-          custom: !!editorOptions.customSelectors,
+          ...local.options?.selectorManager,
+          custom: !!editorOptions.state.customSelectors,
         },
         container: canvasContainer || defaultContainer,
         customUI: !!canvasContainer,
@@ -153,47 +153,55 @@ const EditorInstance = ({
             }
           : {}),
       };
-      editor = grapes.init(config);
-      setEditor(editor);
-      onEditor(editor);
 
-      if (onUpdate) {
-        editor.on("update", () => {
-          onUpdate(editor!.getProjectData(), editor!);
+      const edittorInit = grapes.init(config);
+      setEditor(edittorInit);
+      local.onEditor?.(edittorInit);
+
+      if (local.onUpdate) {
+        editor()?.on("update", () => {
+          local.onUpdate?.(edittorInit.getProjectData(), editor()!);
         });
       }
 
-      editor.onReady(() => {
+      editor()?.onReady(() => {
         setEditorReady(true);
-        onReady?.(editor!);
+        local.onReady?.(editor()!);
       });
     };
 
     const init = async () => {
-      grapesjsCss && (await loadStyle(grapesjsCss));
-      const pluginsRes = await initPlugins(plugins);
-      loadedPlugins = pluginsRes.plugins;
-      pluginOptions = pluginsRes.pluginOptions;
+      if (local.grapesjsCss) {
+        await loadStyle(local.grapesjsCss);
+      }
+
+      const pluginsRes = await initPlugins(local.plugins ?? []);
+
+      setLoadedPlugins(pluginsRes.plugins);
+      setPluginOptions(pluginsRes.pluginOptions);
 
       // Load GrapesJS
-      if (typeof grapesjs === "string") {
-        await loadScript(grapesjs);
+
+      if (typeof local.grapesjs === "string") {
+        await loadScript(local.grapesjs);
         loadEditor((window as any).grapesjs);
       } else {
-        loadEditor(grapesjs);
+        loadEditor(local.grapesjs);
       }
     };
 
     init();
-    onCleanup(() => editor?.destroy());
+    onCleanup(() => editor()?.destroy());
   });
 
-  const height = options.height ?? "100%";
-  const width = options.width ?? "100%";
-  const editorCls = cx("gjs-editor-wrapper", className);
-  const isWaitingReady = waitReady && !isEditorReady();
+  const height = local.options?.height ?? "100%";
+  const width = local.options?.width ?? "100%";
+  const editorCls = cx("gjs-editor-wrapper", local.class);
+  const isWaitingReady = local.waitReady && !isEditorReady();
   const styleObject =
-    typeof style === "string" ? convertStyleStringToObject(style) : style;
+    typeof local.style === "string"
+      ? convertStyleStringToObject(local.style)
+      : local.style;
   const styleRes = { ...styleObject, height, width };
 
   const styleEditorRes: JSX.CSSProperties = {
@@ -208,8 +216,8 @@ const EditorInstance = ({
   };
   return (
     <>
-      {waitReady && !isEditorReady() ? (
-        <div class={editorCls} style={styleRes} children={waitReady} />
+      {local.waitReady && !isEditorReady() ? (
+        <div class={editorCls} style={styleRes} children={local.waitReady} />
       ) : null}
       <div
         {...rest}
@@ -217,7 +225,7 @@ const EditorInstance = ({
         class={editorCls}
         style={styleEditorRes}
       >
-        {children}
+        {local.children}
       </div>
     </>
   );

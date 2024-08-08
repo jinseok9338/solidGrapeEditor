@@ -5,10 +5,10 @@ import { useEditorMaybe } from "./context/EditorInstance";
 /**
  * Load children once the editor is available
  */
-const WithEditor = ({ children }: { children: JSX.Element }) => {
+const WithEditor = (props: { children: JSX.Element }) => {
   const editor = useEditorMaybe();
 
-  return editor() ? <>{children}</> : null;
+  return editor() ? <>{props.children}</> : null;
 };
 
 export default WithEditor;

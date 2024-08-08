@@ -1,9 +1,13 @@
-import { createContext, createSignal, useContext } from "solid-js";
+import { createContext, useContext } from "solid-js";
 import { JSX } from "solid-js/jsx-runtime";
 import { createStore } from "solid-js/store";
 
+interface contextState {
+  state: EditorOptions;
+}
+
 const EditorOptionsContext = createContext<
-  (EditorOptionsState & EditorOptions) | null
+  (contextState & EditorOptionsState) | null
 >(null);
 
 export interface EditorOptionsState {
@@ -32,11 +36,7 @@ export interface EditorOptions {
   ready?: boolean;
 }
 
-export const EditorOptionsProvider = ({
-  children,
-}: {
-  children?: JSX.Element;
-}) => {
+export const EditorOptionsProvider = (props: { children?: JSX.Element }) => {
   const [state, setState] = createStore<EditorOptions>({
     refCanvas: undefined,
     customModal: false,
@@ -93,7 +93,7 @@ export const EditorOptionsProvider = ({
   return (
     <EditorOptionsContext.Provider
       value={{
-        ...state,
+        state,
         setRefCanvas: handleSetRefCanvas,
         setCustomModal: handleSetCustomModal,
         setCustomAssets: handleSetCustomAssets,
@@ -106,7 +106,7 @@ export const EditorOptionsProvider = ({
         setReady: handleSetReady,
       }}
     >
-      {children}
+      {props.children}
     </EditorOptionsContext.Provider>
   );
 };

@@ -8,11 +8,7 @@ export interface EditorInstanceState {
   editor: Accessor<Editor | null>;
   setEditor: (editor: Editor) => void;
 }
-export const EditorInstanceProvider = ({
-  children,
-}: {
-  children?: JSX.Element;
-}) => {
+export const EditorInstanceProvider = (props: { children?: JSX.Element }) => {
   const [editor, setEditor] = createSignal<Editor | null>(null);
   const handleSetEditor = (editor: Editor) => {
     setEditor(editor);
@@ -25,7 +21,7 @@ export const EditorInstanceProvider = ({
         setEditor: handleSetEditor,
       }}
     >
-      {children}
+      {props.children}
     </EditorInstanceContext.Provider>
   );
 };

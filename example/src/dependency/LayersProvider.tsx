@@ -7,7 +7,6 @@ import { PortalContainerResult, portalContainer } from "./utils/solid";
 import { JSX } from "solid-js/jsx-runtime";
 import { createEffect, onCleanup, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
-import { create } from "domain";
 
 export type LayersState = {
   /**
@@ -27,7 +26,7 @@ export interface LayersProviderProps {
   children: (props: LayersResultProps) => JSX.Element;
 }
 
-const LayersProvider = ({ children }: LayersProviderProps) => {
+const LayersProvider = (props: LayersProviderProps) => {
   const { editor } = useEditorInstance();
   const options = useEditorOptions();
   const [propState, setPropState] = createStore<LayersState>({
@@ -61,7 +60,11 @@ const LayersProvider = ({ children }: LayersProviderProps) => {
 
   onMount(() => options.setCustomLayers(true));
 
-  return editor() ? (isFunction(children) ? children(propState) : null) : null;
+  return editor()
+    ? isFunction(props.children)
+      ? props.children(propState)
+      : null
+    : null;
 };
 
 export default LayersProvider;
