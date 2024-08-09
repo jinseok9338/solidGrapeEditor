@@ -36,9 +36,9 @@ interface CanMove extends Partial<Omit<CanMoveResult, "source">> {
   index?: number;
 }
 
-export default function CustomLayerManager({
-  root,
-}: Omit<LayersResultProps, "Container">) {
+export default function CustomLayerManager(
+  props: Omit<LayersResultProps, "Container">
+) {
   const editor = useEditor();
   const [pointerDown, setPointerDown] = createSignal(false);
   const [canMoveRes, setCanMoveRes] = createSignal<CanMove>({});
@@ -128,9 +128,9 @@ export default function CustomLayerManager({
       onPointerMove={onDragMove}
       onPointerUp={onDragEnd}
     >
-      {!!root && (
+      {!!props.root && (
         <LayerItem
-          component={root}
+          component={props.root}
           level={-1}
           draggingCmp={dragging()}
           dragParent={dragParent()}

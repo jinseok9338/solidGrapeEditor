@@ -8,14 +8,10 @@ export type CustomBlockManagerProps = Pick<
   "mapCategoryBlocks" | "dragStart" | "dragStop"
 >;
 
-export default function CustomBlockManager({
-  mapCategoryBlocks,
-  dragStart,
-  dragStop,
-}: CustomBlockManagerProps) {
+export default function CustomBlockManager(props: CustomBlockManagerProps) {
   return (
     <div class="gjs-custom-block-manager text-left">
-      <For each={Array.from(mapCategoryBlocks)}>
+      <For each={Array.from(props.mapCategoryBlocks)}>
         {([category, blocks]) => (
           <div>
             <div class={cx("py-2 px-4 border-y", MAIN_BORDER_COLOR)}>
@@ -30,8 +26,8 @@ export default function CustomBlockManager({
                       "flex flex-col items-center border rounded cursor-pointer py-2 px-5 transition-colors",
                       MAIN_BORDER_COLOR
                     )}
-                    onDragStart={(ev) => dragStart(block, ev)}
-                    onDragEnd={() => dragStop(false)}
+                    onDragStart={(ev) => props.dragStart(block, ev)}
+                    onDragEnd={() => props.dragStop(false)}
                   >
                     <div class="h-10 w-10" innerHTML={block.getMedia()} />
                     <div

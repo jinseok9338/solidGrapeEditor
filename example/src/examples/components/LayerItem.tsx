@@ -5,7 +5,13 @@ import { BsMenuDown } from "solid-icons/bs";
 import type { Component } from "grapesjs";
 //import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { MAIN_BORDER_COLOR, cx } from "../common";
-import { createEffect, createSignal, JSX, onCleanup } from "solid-js";
+import {
+  createEffect,
+  createSignal,
+  JSX,
+  onCleanup,
+  splitProps,
+} from "solid-js";
 import { useEditor } from "@/dependency/context/EditorInstance";
 
 export declare interface LayerItemProps
@@ -18,35 +24,38 @@ export declare interface LayerItemProps
 
 const itemStyle = { maxWidth: `100%` };
 
-export default function LayerItem({
-  component,
-  draggingCmp,
-  dragParent,
-  ...props
-}: LayerItemProps) {
+export default function LayerItem(props: LayerItemProps) {
+  const [local, rest] = splitProps(props, [
+    "component",
+    "level",
+    "draggingCmp",
+    "dragParent",
+  ]);
   const editor = useEditor();
 
   let layerRef: HTMLDivElement;
   const [layerData, setLayerData] = createSignal(
-    editor()?.Layers.getLayerData(component)
+    editor()?.Layers.getLayerData(local.component)
   );
   // const { open, selected, hovered, components, visible, name } = layerData;
   const componentsIds = layerData()?.components.map((cmp) => cmp.getId());
-  const isDragging = draggingCmp === component;
+  const isDragging = local.draggingCmp === local.component;
   const cmpHash = componentsIds?.join("-");
-  const level = props.level + 1;
-  const isHovered = layerData()?.hovered || dragParent === component;
+  const level = local.level + 1;
+  const isHovered =
+    layerData()?.hovered || local.dragParent === local.component;
 
   createEffect(() => {
-    level === 0 && setLayerData(editor()?.Layers.getLayerData(component));
+    level === 0 && setLayerData(editor()?.Layers.getLayerData(local.component));
     if (layerRef) {
-      (layerRef as any).__cmp = component;
+      (layerRef as any).__cmp = local.component;
     }
   });
 
   createEffect(() => {
     const up = (cmp: Component) => {
-      cmp === component && setLayerData(editor()?.Layers.getLayerData(cmp));
+      cmp === local.component &&
+        setLayerData(editor()?.Layers.getLayerData(cmp));
     };
     const ev = editor()?.Layers.events.component;
     if (ev) {
@@ -64,31 +73,35 @@ export default function LayerItem({
     <LayerItem
       component={cmp}
       level={level}
-      draggingCmp={draggingCmp}
-      dragParent={dragParent}
+      draggingCmp={local.draggingCmp}
+      dragParent={local.dragParent}
     />
   ));
 
   const toggleOpen = (ev: MouseEvent) => {
     ev.stopPropagation();
-    editor()?.Layers.setLayerData(component, { open: !open });
+    editor()?.Layers.setLayerData(local.component, { open: !open });
   };
 
   const toggleVisibility = (ev: MouseEvent) => {
     ev.stopPropagation();
-    editor()?.Layers.setLayerData(component, {
+    editor()?.Layers.setLayerData(local.component, {
       visible: !layerData()?.visible,
     });
   };
 
   const select = (event: MouseEvent) => {
     event.stopPropagation();
-    editor()?.Layers.setLayerData(component, { selected: true }, { event });
+    editor()?.Layers.setLayerData(
+      local.component,
+      { selected: true },
+      { event }
+    );
   };
 
   const hover = (hovered: boolean) => {
-    if (!hovered || !draggingCmp) {
-      editor()?.Layers.setLayerData(component, { hovered });
+    if (!hovered || !local.draggingCmp) {
+      editor()?.Layers.setLayerData(local.component, { hovered });
     }
   };
 
@@ -150,7 +163,9 @@ export default function LayerItem({
         </div>
       </div>
       {!!(layerData()?.open && layerData()?.components.length) && (
-        <div class={cx("max-w-full", !open && "hidden")}>{cmpToRender}</div>
+        <div class={cx("max-w-full", !layerData()?.open && "hidden")}>
+          {cmpToRender}
+        </div>
       )}
     </div>
   );

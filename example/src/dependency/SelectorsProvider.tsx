@@ -105,6 +105,7 @@ const SelectorsProvider = (props: SelectorsProviderProps) => {
   });
 
   onMount(() => options.setCustomSelectors(true));
+
   return editor()
     ? isFunction(props.children)
       ? props.children(propState)

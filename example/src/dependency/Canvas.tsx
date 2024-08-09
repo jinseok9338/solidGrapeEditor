@@ -7,7 +7,6 @@ interface CanvasProps extends JSX.HTMLAttributes<HTMLDivElement> {
 export default function Canvas({ children, ...rest }: CanvasProps) {
   const editorOptions = useEditorOptions();
   let canvasRef: HTMLDivElement;
-
   createEffect(() => {
     canvasRef && editorOptions.setRefCanvas(canvasRef);
   });

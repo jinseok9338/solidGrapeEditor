@@ -90,7 +90,7 @@ export const slowStoragePlugin: Plugin = (editor) => {
 
 export const defaultEditorProps: EditorProps = {
   grapesjs: window.grapesjs,
-  // grapesjsCss: "http://localhost:8080/dist/css/grapes.min.css",
+  grapesjsCss: "https://unpkg.com/grapesjs/dist/css/grapes.min.css",
   plugins: plugins,
   options: defaultOptions,
 };

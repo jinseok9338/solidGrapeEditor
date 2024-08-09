@@ -24,25 +24,19 @@ interface CustomModalProps extends Omit<ComponentProps<"div">, "title"> {
   open: boolean;
 }
 
-export default function CustomModal({
-  children,
-  title,
-  close,
-  open,
-  ...props
-}: CustomModalProps) {
-  if (!open) return null;
+export default function CustomModal(props: CustomModalProps) {
+  if (!props.open) return null;
 
   return (
-    <div class={modalStyle} onClick={close}>
+    <div class={modalStyle} onClick={props.close}>
       <div class={contentStyle} onClick={(e) => e.stopPropagation()}>
         <div class={headerStyle}>
-          <div class="text-lg">{title}</div>
-          <div onClick={close} class={closeIconStyle}>
+          <div class="text-lg">{props.title}</div>
+          <div onClick={props.close} class={closeIconStyle}>
             <AiOutlineClose size={20} />
           </div>
         </div>
-        <div class="flex-grow overflow-y-auto">{children}</div>
+        <div class="flex-grow overflow-y-auto">{props.children}</div>
       </div>
     </div>
   );

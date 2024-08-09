@@ -12,21 +12,15 @@ import {
 } from "@/components/ui/select";
 import { SelectorsResultProps } from "@/dependency/SelectorsProvider";
 
-export default function CustomSelectorManager({
-  selectors,
-  selectedState,
-  states,
-  targets,
-  setState,
-  addSelector,
-  removeSelector,
-}: Omit<SelectorsResultProps, "Container">) {
+export default function CustomSelectorManager(
+  props: Omit<SelectorsResultProps, "Container">
+) {
   const addNewSelector = () => {
-    const next = selectors.length + 1;
-    addSelector({ name: `new-${next}`, label: `New ${next}` });
+    const next = props.selectors.length + 1;
+    props.addSelector({ name: `new-${next}`, label: `New ${next}` });
   };
 
-  const targetStr = targets.join(", ");
+  //const targetStr = props.targets.join(", ");
 
   return (
     <div class="gjs-custom-selector-manager p-2 flex flex-col gap-2 text-left">
@@ -34,12 +28,14 @@ export default function CustomSelectorManager({
         <div class="flex-grow">Selectors</div>
         <form class="flex items-center gap-2">
           <Select
-            value={selectedState}
-            onChange={(v) => setState(v)}
-            options={states.map((state) => ({
-              value: state.id,
-              rawValue: state.getName(),
-            }))}
+            value={props.selectedState}
+            onChange={(v) => {
+              const state = props.states.find((s) => s.getName() === v);
+              if (state) {
+                props.setState(state.id as string);
+              }
+            }}
+            options={props.states.map((state) => state.getName())}
             placeholder="- State -"
             itemComponent={(props) => (
               <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>
@@ -60,30 +56,34 @@ export default function CustomSelectorManager({
           MAIN_BORDER_COLOR
         )}
       >
-        {targetStr ? (
+        {props.targets.join(", ") ? (
           <button
             type="button"
             onClick={addNewSelector}
             class={cx("border rounded px-2 py-1")}
           >
-            <AiFillPlusCircle size={0.7} />
+            <AiFillPlusCircle size={10} />
           </button>
         ) : (
           <div class="opacity-70">Select a component</div>
         )}
-        <For each={selectors}>
+        <For each={props.selectors}>
           {(selector) => (
             <div class="px-2 py-1 flex items-center gap-1 whitespace-nowrap bg-sky-500 rounded">
               <div>{selector.getLabel()}</div>
-              <button type="button" onClick={() => removeSelector(selector)}>
-                <AiFillCloseCircle size={0.7} />
+              <button
+                type="button"
+                onClick={() => props.removeSelector(selector)}
+              >
+                <AiFillCloseCircle size={10} />
               </button>
             </div>
           )}
         </For>
       </div>
       <div>
-        Selected: <span class="opacity-70">{targetStr || "None"}</span>
+        Selected:
+        <span class="opacity-70">{props.targets.join(", ") || "None"}</span>
       </div>
     </div>
   );

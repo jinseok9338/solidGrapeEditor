@@ -1,6 +1,6 @@
 import type { Trait } from "grapesjs";
 //import React, { memo, useEffect, useState } from 'react';
-import { useEditorInstance } from "./context/EditorInstance";
+import { useEditor, useEditorInstance } from "./context/EditorInstance";
 import { useEditorOptions } from "./context/EditorOptions";
 import { isFunction } from "./utils";
 import { PortalContainerResult, portalContainer } from "./utils/solid";
@@ -27,7 +27,7 @@ export interface TraitsProviderProps {
 }
 
 const TraitsProvider = (props: TraitsProviderProps) => {
-  const { editor } = useEditorInstance();
+  const editor = useEditor();
   const options = useEditorOptions();
   const [propState, setPropState] = createStore<TraitsState>({
     traits: [],

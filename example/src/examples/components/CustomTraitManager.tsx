@@ -3,17 +3,17 @@ import { For, Show } from "solid-js";
 import TraitPropertyField from "./TraitPropertyField";
 import { TraitsResultProps } from "@/dependency/TraitsProvider";
 
-export default function CustomTraitManager({
-  traits,
-}: Omit<TraitsResultProps, "Container">) {
+export default function CustomTraitManager(
+  props: Omit<TraitsResultProps, "Container">
+) {
   return (
     <div class="gjs-custom-style-manager text-left mt-3 p-1">
       <Show
-        when={traits.length > 0}
+        when={props.traits.length > 0}
         fallback={<div>No properties available</div>}
       >
-        <For each={traits}>
-          {(trait) => <TraitPropertyField key={trait.getId()} trait={trait} />}
+        <For each={props.traits}>
+          {(trait) => <TraitPropertyField trait={trait} />}
         </For>
       </Show>
     </div>

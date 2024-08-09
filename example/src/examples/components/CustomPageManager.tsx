@@ -4,16 +4,10 @@ import { BTN_CLS, MAIN_BORDER_COLOR, cx } from "../common";
 import { AiFillDelete } from "solid-icons/ai";
 import { PagesResultProps } from "@/dependency/PagesProvider";
 
-export default function CustomPageManager({
-  pages,
-  selected,
-  add,
-  select,
-  remove,
-}: PagesResultProps) {
+export default function CustomPageManager(props: PagesResultProps) {
   const addNewPage = () => {
-    const nextIndex = pages.length + 1;
-    add({
+    const nextIndex = props.pages.length + 1;
+    props.add({
       name: `New page ${nextIndex}`,
       component: `<h1>Page content ${nextIndex}</h1>`,
     });
@@ -26,7 +20,7 @@ export default function CustomPageManager({
           Add new page
         </button>
       </div>
-      <For each={pages}>
+      <For each={props.pages}>
         {(page, index) => (
           <div
             class={cx(
@@ -38,12 +32,12 @@ export default function CustomPageManager({
             <button
               type="button"
               class="flex-grow text-left"
-              onClick={() => select(page)}
+              onClick={() => props.select(page)}
             >
               {page.getName() || "Untitled page"}
             </button>
-            {selected !== page && (
-              <button type="button" onClick={() => remove(page)}>
+            {props.selected !== page && (
+              <button type="button" onClick={() => props.remove(page)}>
                 <AiFillDelete size={0.7} />
               </button>
             )}

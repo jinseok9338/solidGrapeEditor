@@ -49,7 +49,7 @@ export interface BlocksEventProps {
 
 export type MapCategoryBlocks = Map<string, Block[]>;
 
-const BlocksProvider = ({ children }: BlocksProviderProps) => {
+const BlocksProvider = (props: BlocksProviderProps) => {
   const { editor } = useEditorInstance();
   const options = useEditorOptions();
   const [propState, setPropState] = createStore<BlocksState>({
@@ -106,7 +106,11 @@ const BlocksProvider = ({ children }: BlocksProviderProps) => {
 
   onMount(() => options.setCustomBlocks(true));
 
-  return editor() ? (isFunction(children) ? children(propState) : null) : null;
+  return editor()
+    ? isFunction(props.children)
+      ? props.children(propState)
+      : null
+    : null;
 };
 
 export default BlocksProvider;

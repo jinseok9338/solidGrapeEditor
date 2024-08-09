@@ -10,10 +10,7 @@ export type CustomAssetManagerProps = Pick<
   "assets" | "close" | "select"
 >;
 
-export default function CustomAssetManager({
-  assets,
-  select,
-}: CustomAssetManagerProps) {
+export default function CustomAssetManager(props: CustomAssetManagerProps) {
   // useEditor 를 쓰면 eidtor 는 존재함
   const editor = useEditor();
 
@@ -23,7 +20,7 @@ export default function CustomAssetManager({
 
   return (
     <div class="grid grid-cols-3 gap-2 pr-2">
-      <For each={assets}>
+      <For each={props.assets}>
         {(asset) => (
           <div class="relative group rounded overflow-hidden">
             <img class="display-block" src={asset.getSrc()} />
@@ -31,7 +28,7 @@ export default function CustomAssetManager({
               <button
                 type="button"
                 class={BTN_CLS}
-                onClick={() => select(asset, true)}
+                onClick={() => props.select(asset, true)}
               >
                 Select
               </button>

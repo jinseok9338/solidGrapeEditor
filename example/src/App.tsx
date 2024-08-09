@@ -3,14 +3,11 @@ import { AiOutlineCloseCircle } from "solid-icons/ai";
 
 import { grapesjs, type Editor, type ProjectData } from "grapesjs";
 //import { useCallback, useMemo, useState } from 'react';
-//import CustomEditor from './examples/CustomEditor';
-//import DefaultEditor from './examples/DefaultEditor';
-import EditorWaitReady from "./examples/EditorWaitReady";
 import { getDateString } from "./examples/common";
 
 import { createEffect, createSignal, Show } from "solid-js";
 import DefaultEditor from "./examples/DefaultEditor";
-import { create } from "domain";
+import DefaultCustomEditor from "./examples/CustomEditor";
 //import DefaultCustomEditor from './examples/DefaultCustomEditor';
 
 enum Examples {
@@ -48,7 +45,7 @@ function App() {
     setReady(undefined);
   };
 
-  let EditorToRender = DefaultEditor;
+  let EditorToRender = DefaultCustomEditor;
 
   // switch (selectedExample()) {
   //   // case Examples.Custom:

@@ -6,30 +6,31 @@ import {
   Accordion,
   AccordionTrigger,
   AccordionContent,
+  AccordionItem,
 } from "@/components/ui/accordion";
 import { StylesResultProps } from "@/dependency/StylesProvider";
 
-export default function CustomStyleManager({
-  sectors,
-}: Omit<StylesResultProps, "Container">) {
+export default function CustomStyleManager(
+  props: Omit<StylesResultProps, "Container">
+) {
   return (
     <div class="gjs-custom-style-manager text-left">
-      <For each={sectors}>
-        {(sector) => (
-          <Accordion>
-            <AccordionTrigger class="!bg-slate-800">
-              {sector.getName()}
-            </AccordionTrigger>
-            <AccordionContent class={`${MAIN_BG_COLOR} flex flex-wrap`}>
-              <For each={sector.getProperties()}>
-                {(prop) => (
-                  <StylePropertyField key={prop.getId()} prop={prop} />
-                )}
-              </For>
-            </AccordionContent>
-          </Accordion>
-        )}
-      </For>
+      <Accordion collapsible>
+        <For each={props.sectors}>
+          {(sector) => (
+            <AccordionItem value={sector.getName()}>
+              <AccordionTrigger class="!bg-slate-800">
+                {sector.getName()}
+              </AccordionTrigger>
+              <AccordionContent class={`${MAIN_BG_COLOR} flex flex-wrap`}>
+                <For each={sector.getProperties()}>
+                  {(prop) => <StylePropertyField prop={prop} />}
+                </For>
+              </AccordionContent>
+            </AccordionItem>
+          )}
+        </For>
+      </Accordion>
     </div>
   );
 }

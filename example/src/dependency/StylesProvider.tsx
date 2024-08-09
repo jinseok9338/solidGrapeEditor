@@ -6,7 +6,7 @@ import { PortalContainerResult, portalContainer } from "./utils/solid";
 import { useEditorOptions } from "./context/EditorOptions";
 import { createStore } from "solid-js/store";
 import { JSX } from "solid-js/jsx-runtime";
-import { createEffect, onCleanup, onMount } from "solid-js";
+import { createEffect, createMemo, onCleanup, onMount } from "solid-js";
 
 export type StylesState = {
   /**
@@ -37,7 +37,7 @@ const StylesProvider = (props: StylesProviderProps) => {
   createEffect(() => {
     if (!editor()) return;
 
-    const event = editor()?.Styles.events.custom;
+    const event = createMemo(() => editor()?.Styles.events.custom);
 
     const up = ({ container }: { container: HTMLElement }) => {
       setPropState({
@@ -46,19 +46,18 @@ const StylesProvider = (props: StylesProviderProps) => {
       });
     };
 
-    if (event) {
-      editor()?.on(event, up);
+    if (event()) {
+      editor()?.on(event() ?? "", up);
     }
 
     onCleanup(() => {
-      if (event) {
-        editor()?.off(event, up);
+      if (event()) {
+        editor()?.off(event() ?? "", up);
       }
     });
   });
 
   onMount(() => options.setCustomStyles(true));
-
   return editor()
     ? isFunction(props.children)
       ? props.children(propState)
