@@ -3,40 +3,21 @@ import { render } from "solid-js/web";
 import "./index.css"; // Import Tailwind CSS
 import Canvas from "./Canvas/view";
 import {
-  convertToFrames,
+  convertToFramesAndComponents,
   generateDeeplyNestedHtml,
   generateLargeHtml,
   renderHtml,
 } from "./utils";
 import { Frame } from "./Canvas/provider/Frame";
+import { FrameHandler } from "./Canvas/view/FrameHandler/FrameHandler";
 
 // Usage
 function App(): JSX.Element {
-  const htmlString = `
-  <div class="hello" style="color: red;">
-    <div><span>Hello,</span><span><strong>Solid.js</strong></span><span>World!</span></div>
-    <div><span>Nested</span><span>Element</span></div>
-  </div>
-  `;
-  // const { frames, components } = convertToFrames(htmlString);
-  // const html = renderHtml(frames, components);
-  // Stress test parameters
-
-  const depth = 2000; // Adjust the depth as needed for your stress test
-
-  // Generate a deeply nested HTML string
-  const deeplyNestedHtmlString = generateDeeplyNestedHtml(depth);
-
-  // Measure the time to convert to frames
-  console.time("convertToFrames");
-  const { frames, components } = convertToFrames(deeplyNestedHtmlString);
-  console.timeEnd("convertToFrames");
-
-  // Measure the time to render HTML
-  console.time("renderHtml");
-  const renderedHtml = renderHtml(frames, components);
-  console.timeEnd("renderHtml");
-  return <Canvas html={renderedHtml} />;
+  return (
+    <div class="w-[300px]">
+      <FrameHandler name="Frame Name" />
+    </div>
+  );
 }
 
 const root = document.getElementById("root");

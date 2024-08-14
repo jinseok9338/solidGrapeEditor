@@ -1,9 +1,11 @@
+import clsx, { ClassValue } from "clsx";
 import { Component, Frame } from "../Canvas/provider/Frame";
+import { twMerge } from "tailwind-merge";
 
 const withWrapperHtml = (children: string) => `<div>${children} </div>`;
 
 // Function to convert HTML to Frames and Components
-export const convertToFrames = (
+export const convertToFramesAndComponents = (
   html: string
 ): { frames: Frame[]; components: Component[] } => {
   const parsedHtml = html.trim();
@@ -162,3 +164,6 @@ export const generateDeeplyNestedHtml = (depth: number): string => {
   }
   return html;
 };
+
+// cn
+export const cn = (...classLists: ClassValue[]) => twMerge(clsx(classLists));

@@ -6,3 +6,5 @@ export const DEFAULT_COORDS: Coordinates = {
 };
 
 export const noop = () => {};
+
+export const hasWindow = typeof window !== "undefined";
